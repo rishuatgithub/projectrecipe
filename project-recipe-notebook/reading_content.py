@@ -7,8 +7,6 @@
 # - Last Updated: Sunday May 3, 2020
 # #### License: Copyrighted. Rishu Kumar Shrivastava
 
-
-
 import requests
 import urllib.request
 from bs4 import BeautifulSoup
@@ -17,8 +15,7 @@ from urllib.parse import urljoin
 
 web_urls=['https://www.jamieoliver.com/recipes/']
 
-#response = [requests.get(r) for r in web_urls]
-
+## define the webconnection class to get the content from the website
 class WebConnection:
     
     def __init__(self,base_url,url):
@@ -42,6 +39,7 @@ class WebConnection:
 search_strings = {'l0':'tile-wrapper','l1':'recipe-block','l2':'recipe-block'}
 search_title_strings = {'l0':'tile-title','l1':'recipe-title','l2':'recipe-title'}
 
+## parse the website no 1.
 def parsingJOWeb():
     
     url = web_urls[0]
@@ -172,3 +170,9 @@ import json
 
 with open("jamieoliverdata.json","w") as file:
     file.write(json.dumps(data_dict))
+
+
+
+print("====== Scrapping Data from Website Completed. =========")
+
+
