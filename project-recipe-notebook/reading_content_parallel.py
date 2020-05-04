@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Project Recipe Notebook
+# # Project Recipe Notebook - Parallel Processing
 # ### Scrapping Web pages for getting the recipe details
 # - Author: Rishu Shrivastava (@rishuatgithub)
-# - Last Updated: Sunday May 3, 2020
+# - Last Updated: Sunday May 4, 2020
 # #### License: Copyrighted. Rishu Kumar Shrivastava
 
 import requests
@@ -13,12 +13,22 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urljoin
 import logging
+import multiprocessing
+from multiprocessing import Pool
+from multiprocessing import cpu_count
+import json
+import os
 
 logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s',filename="reading_content_log.log",filemode='w',level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
-logging.info("Starting of the Application: reading_content.py")
-
 web_urls=['https://www.jamieoliver.com/recipes/']
+search_strings = {'l0':'tile-wrapper','l1':'recipe-block','l2':'recipe-block'}
+search_title_strings = {'l0':'tile-title','l1':'recipe-title','l2':'recipe-title'}
+web_parsed_content = {}
+web_parsed_content['levels'] = {}
+url = web_urls[0]
+base_url = urljoin(web_urls[0],'/') ## https://jamieoliver.com/
+total_cpu_count = multiprocessing.cpu_count()
 
 def logwarnings(stepname,url):
     return logging.warning(f"Found an issue will parsing url: {url} for the step: {stepname}")
@@ -52,38 +62,30 @@ class WebConnection:
         content = BeautifulSoup(response.content,features='lxml')
         return content
 
-search_strings = {'l0':'tile-wrapper','l1':'recipe-block','l2':'recipe-block'}
-search_title_strings = {'l0':'tile-title','l1':'recipe-title','l2':'recipe-title'}
 
-## parse the website no 1.
-def parsingJOWeb():
-    
-    url = web_urls[0]
-    base_url = urljoin(web_urls[0],'/') ## https://jamieoliver.com/
-    
-    web_parsed_content = {}
-    web_parsed_content['levels'] = {}
-    
-    l1_arr = []
-    l2_arr = []
-    l3_arr = []
-    
+### parsing the website no 1. - Jamie Oliver
+# Level 0
+def parsingJOWebL0():
+    logging.info("Parsing of Level 0 is started")
     cont = WebConnection(base_url,url).getcontent()
     web_parsed_content['title'] = cont.title.text
     web_parsed_content['parent_url'] = url
-    
-    ## level 0
-    logging.info("Parsing of Level 0 is started")
+
     l0_block = cont.find_all("div",{'class':search_strings['l0']})
     l0_ahref = [f.find_all("a")[0].get("href") for f in l0_block]
     l0_title = [f.find("div",{'class':search_title_strings['l0']}).text for f in l0_block]
     
     web_parsed_content['levels']['level0'] = {'parent_url':url, 'level':{'title':l0_title,'url':l0_ahref}}
     logging.info("Parsing of Level 0 is complete")
+    print(web_parsed_content['levels']['level0']['level']['url'])
+    return web_parsed_content
 
-    ## level 1
+# Level 1
+def parsingJOWebL1(webcontentL0):
+    l1_arr = []
+    
     logging.info("Parsing of Level 1 is started")
-    for l0 in l0_ahref:
+    for l0 in webcontentL0['levels']['level0']['level']['url']:
         cont_l1 = WebConnection(base_url,l0).getcontent()
         l1_block = cont_l1.find_all("div",{'class':search_strings['l1']})
         l1_ahref = [f.find_all("a")[0].get("href") for f in l1_block]
@@ -92,10 +94,15 @@ def parsingJOWeb():
         
     web_parsed_content['levels']['level1'] = l1_arr
     logging.info("Parsing of Level 1 is complete")
-    
-    ## level 2
+
+    return web_parsed_content
+
+# Level 2
+def parsingJOWebL2(webcontentL1):
+    l2_arr = []
+
     logging.info("Parsing of Level 2 is started")
-    l1_url_list = [ pcl1['level']['url'] for pcl1 in web_parsed_content['levels']['level1']]
+    l1_url_list = [ pcl1['level']['url'] for pcl1 in webcontentL1['levels']['level1']]
     
     for l1_list in l1_url_list:
         for l1 in l1_list:
@@ -108,10 +115,15 @@ def parsingJOWeb():
     
     web_parsed_content['levels']['level2'] = l2_arr
     logging.info("Parsing of Level 2 is complete")
-    
-    ## level 3 - final level
+
+    return web_parsed_content
+
+# Level 3 (Final Level)
+def parsingJOWebL3(webcontentL2):
+    l3_arr = []
+
     logging.info("Parsing of Level 3 is started")
-    l2_url_list = [ pcl2['level']['url'] for pcl2 in web_parsed_content['levels']['level2']]
+    l2_url_list = [ pcl2['level']['url'] for pcl2 in webcontentL2['levels']['level2']]
     
     for l2_list in l2_url_list:
         for l2 in l2_list:
@@ -194,25 +206,67 @@ def parsingJOWeb():
     web_parsed_content['levels']['level3'] = l3_arr
     logging.info("Parsing of Level 3 is complete")
 
-    return web_parsed_content
+    return web_parsed_content  ## returning the full final content
 
 
-data_dict = {'data': parsingJOWeb() }  # wrap everything into a dict
+def savetofile(data_dict,level):
+    fname = 'jamieoliverdata_'+level+'.json'
+    logging.info(f"Writing the dictionary to the file: {fname} started.")
 
-#### Save to a file locally
-## save to a file 
+    with open(fname,"w") as file:
+        file.write(json.dumps(data_dict))
+    
+    logging.info(f"Writing the dictionary to the file: {fname} is complete.")
 
-import json
-fname = 'jamieoliverdata.json'
+def readfromfile(level):
+    fname = 'jamieoliverdata_'+level+'.json'
+    logging.info(f"Reading from the file: {fname} started.")
 
-logging.info(f"Writing the dictionary to the file: {fname} started.")
+    with open(fname,'r') as file: 
+        data = json.load(file)
 
-with open(fname,"w") as file:
-    file.write(json.dumps(data_dict))
+    logging.info(f"Reading from the file: {fname} completed.")
+    return data 
 
-logging.info(f"Writing the dictionary to the file: {fname} is complete.")
+def checkiffileexists(level): 
+    fname = 'jamieoliverdata_'+level+'.json'
+    isexits = os.path.isfile(fname)
+    logging.info(f"checking if the file : {fname} exists. Result: {isexits}")
+    return isexits
 
 
-logging.info("====== Scrapping Data from Website Completed. =========")
+def mainjob(): 
+
+    if checkiffileexists('l0'): 
+        data_dictL0 = readfromfile('l0')
+    else:
+        data_dictL0 = {'data': parsingJOWebL0() }
+        savetofile(data_dictL0, 'l0')
+    
+    if checkiffileexists('l1'):
+        data_dictL1 = readfromfile('l1')
+    else: 
+        data_dictL1 = {'data': parsingJOWebL1(data_dictL0['data']) }
+        savetofile(data_dictL1, 'l1')
+
+    if checkiffileexists('l2'):
+        data_dictL2 = readfromfile('l2')
+    else: 
+        data_dictL2 = {'data': parsingJOWebL2(data_dictL1['data']) }
+        savetofile(data_dictL2, 'l2')
+
+    if not checkiffileexists('l3'):
+        data_dictL3 = {'data': parsingJOWebL3(data_dictL2['data']) }
+        savetofile(data_dictL3, 'l3')
+
+    #with Pool(total_cpu_count) as p: 
+    #    data_dictL1 = {'data': p.map(parsingJOWebL1,data_dictL0['data']) }
+    #    savetofile(data_dictL1, 'l1')
+
+
+if __name__ == '__main__': 
+    logging.info("Starting of the Application: reading_content.py")
+    mainjob()
+    logging.info("====== Scrapping Data from Website Completed. =========")
 
 
