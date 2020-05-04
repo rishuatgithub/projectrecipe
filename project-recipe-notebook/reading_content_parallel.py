@@ -238,7 +238,7 @@ def checkiffileexists(level):
 def mainjob(): 
 
     if checkiffileexists('l0'): 
-        data_dictL0 = readfromfile('l0')
+        data_dictL0 = readfromfile('l0') ## read from file instead of scrapping again
     else:
         data_dictL0 = {'data': parsingJOWebL0() }
         savetofile(data_dictL0, 'l0')
