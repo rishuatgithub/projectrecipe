@@ -18,8 +18,15 @@ from multiprocessing import Pool
 from multiprocessing import cpu_count
 import json
 import os
+import time
+import read_config
 
-logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s',filename="reading_content_log.log",filemode='w',level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
+
+config = read_config.getconfig()
+LOGFILENAME = config['PRCONFIG']['GENERAL']['LOG_DIR'] + config['PRCONFIG']['GENERAL']['LOG_FILENAME']
+DATA_DIR = config['PRCONFIG']['GENERAL']['DATA_DIR']
+
+logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s',filename=LOGFILENAME,filemode='w',level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
 web_urls=['https://www.jamieoliver.com/recipes/']
 search_strings = {'l0':'tile-wrapper','l1':'recipe-block','l2':'recipe-block'}
@@ -49,7 +56,7 @@ class WebConnection:
         try:
             response = requests.get(self.url,timeout=10) ## waiting for max timeout = 10 sec for each request
 
-        except requests.exceptions.timeout:
+        except requests.exceptions.Timeout:
             logging.error(f"Request to server timed-out. Server: {self.url}")
 
         except requests.exceptions.RequestException:
@@ -62,8 +69,16 @@ class WebConnection:
         content = BeautifulSoup(response.content,features='lxml')
         return content
 
+def getsomesleep(num):
+    '''
+        Pausing the scrapping is important for not overloading the website
+    '''
+    time_to_sleep = 120 ## 60 sec
+    logging.info(f"Request Reached Limit of Level: {num}. Time to take some {time_to_sleep} sec sleep.")
+    time.sleep(time_to_sleep)  
 
-### parsing the website no 1. - Jamie Oliver
+
+### parsing the website no 1.
 # Level 0
 def parsingJOWebL0():
     logging.info("Parsing of Level 0 is started")
@@ -77,7 +92,6 @@ def parsingJOWebL0():
     
     web_parsed_content['levels']['level0'] = {'parent_url':url, 'level':{'title':l0_title,'url':l0_ahref}}
     logging.info("Parsing of Level 0 is complete")
-    print(web_parsed_content['levels']['level0']['level']['url'])
     return web_parsed_content
 
 # Level 1
@@ -121,6 +135,7 @@ def parsingJOWebL2(webcontentL1):
 # Level 3 (Final Level)
 def parsingJOWebL3(webcontentL2):
     l3_arr = []
+    incr = 0
 
     logging.info("Parsing of Level 3 is started")
     l2_url_list = [ pcl2['level']['url'] for pcl2 in webcontentL2['levels']['level2']]
@@ -195,13 +210,18 @@ def parsingJOWebL3(webcontentL2):
             else:
                 logwarnings('method',l2)
                 method = []
-                
+             
             recipedict = {'recipe_name':recipe_name,'recipie_subtitle':recipe_subtitle,'recipe_intro':recipe_intro,
                           'title_tags':title_tags,'tags_list':tags_list, 'servings':servings, 'timing':timing,
                           'difficulty':difficulty, 'nutrition':nutrition, 'ingredients':ingrednt, 'method':method
                          }
             
             l3_arr.append({'parent_url':l2, 'recipe_details':recipedict})
+
+            incr += 1
+
+            if incr in [25,50,100,200]:
+                getsomesleep(incr)
 
     web_parsed_content['levels']['level3'] = l3_arr
     logging.info("Parsing of Level 3 is complete")
@@ -210,7 +230,8 @@ def parsingJOWebL3(webcontentL2):
 
 
 def savetofile(data_dict,level):
-    fname = 'jamieoliverdata_'+level+'.json'
+
+    fname = DATA_DIR + 'jamieoliverdata_'+level+'.json'
     logging.info(f"Writing the dictionary to the file: {fname} started.")
 
     with open(fname,"w") as file:
@@ -219,7 +240,7 @@ def savetofile(data_dict,level):
     logging.info(f"Writing the dictionary to the file: {fname} is complete.")
 
 def readfromfile(level):
-    fname = 'jamieoliverdata_'+level+'.json'
+    fname = DATA_DIR + 'jamieoliverdata_'+level+'.json'
     logging.info(f"Reading from the file: {fname} started.")
 
     with open(fname,'r') as file: 
@@ -229,13 +250,16 @@ def readfromfile(level):
     return data 
 
 def checkiffileexists(level): 
-    fname = 'jamieoliverdata_'+level+'.json'
+    fname = DATA_DIR + 'jamieoliverdata_'+level+'.json'
     isexits = os.path.isfile(fname)
     logging.info(f"checking if the file : {fname} exists. Result: {isexits}")
     return isexits
 
 
 def mainjob(): 
+    '''
+        This function shows the flow of the job.
+    '''
 
     if checkiffileexists('l0'): 
         data_dictL0 = readfromfile('l0') ## read from file instead of scrapping again
