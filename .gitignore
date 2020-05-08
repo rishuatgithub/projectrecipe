@@ -1,7 +1,10 @@
 *.tfstate
 *.tfstate.backup
 **/.terraform
-**/__pycache__
+*/__pycache__/*
 *.log
-*/.DS_Store
+*.DS_Store
 lock.json
+data/*
+.ipynb_checkpoints/*
+**/.ipynb_checkpoints

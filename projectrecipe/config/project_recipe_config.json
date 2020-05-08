@@ -8,6 +8,11 @@
             "LOG_FILENAME":"reading_content_log.log",
 
             "DATA_DIR":"data/"
+        },
+
+        "AWS":{
+            "PROFILE":"dev"
+
         }
         
 
