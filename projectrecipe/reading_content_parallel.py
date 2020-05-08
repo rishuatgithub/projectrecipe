@@ -12,7 +12,6 @@ import urllib.request
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urljoin
-import logging
 import multiprocessing
 from multiprocessing import Pool
 from multiprocessing import cpu_count
@@ -20,13 +19,10 @@ import json
 import os
 import time
 import read_config
+import setup_logging
+import aws_service
+import datetime
 
-
-config = read_config.getconfig()
-LOGFILENAME = config['PRCONFIG']['GENERAL']['LOG_DIR'] + config['PRCONFIG']['GENERAL']['LOG_FILENAME']
-DATA_DIR = config['PRCONFIG']['GENERAL']['DATA_DIR']
-
-logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s',filename=LOGFILENAME,filemode='w',level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
 web_urls=['https://www.jamieoliver.com/recipes/']
 search_strings = {'l0':'tile-wrapper','l1':'recipe-block','l2':'recipe-block'}
@@ -35,7 +31,7 @@ web_parsed_content = {}
 web_parsed_content['levels'] = {}
 url = web_urls[0]
 base_url = urljoin(web_urls[0],'/') ## https://jamieoliver.com/
-total_cpu_count = multiprocessing.cpu_count()
+#total_cpu_count = multiprocessing.cpu_count()
 
 def logwarnings(stepname,url):
     return logging.warning(f"Found an issue will parsing url: {url} for the step: {stepname}")
@@ -229,9 +225,12 @@ def parsingJOWebL3(webcontentL2):
     return web_parsed_content  ## returning the full final content
 
 
+def getFilename(level): 
+    return DATA_DIR + 'jamieoliverdata_'+level+'.json'
+
 def savetofile(data_dict,level):
 
-    fname = DATA_DIR + 'jamieoliverdata_'+level+'.json'
+    fname = getFilename(level)
     logging.info(f"Writing the dictionary to the file: {fname} started.")
 
     with open(fname,"w") as file:
@@ -240,7 +239,7 @@ def savetofile(data_dict,level):
     logging.info(f"Writing the dictionary to the file: {fname} is complete.")
 
 def readfromfile(level):
-    fname = DATA_DIR + 'jamieoliverdata_'+level+'.json'
+    fname = getFilename(level)
     logging.info(f"Reading from the file: {fname} started.")
 
     with open(fname,'r') as file: 
@@ -250,10 +249,18 @@ def readfromfile(level):
     return data 
 
 def checkiffileexists(level): 
-    fname = DATA_DIR + 'jamieoliverdata_'+level+'.json'
+    fname = getFilename(level)
     isexits = os.path.isfile(fname)
     logging.info(f"checking if the file : {fname} exists. Result: {isexits}")
     return isexits
+
+def generateUniquebucketname(): 
+
+    dt = datetime.datetime.now().strftime('%Y%M%d.%H%m%s')
+    bucketname = "projectrecipe.s3."+dt+".data"
+    logging.info(f"Bucket Name generated: {bucketname}")
+    return bucketname
+
 
 
 def mainjob(): 
@@ -263,25 +270,32 @@ def mainjob():
 
     if checkiffileexists('l0'): 
         data_dictL0 = readfromfile('l0') ## read from file instead of scrapping again
+        aws_service.putdataintobucket(bucketname,getFilename('l0'))
     else:
         data_dictL0 = {'data': parsingJOWebL0() }
         savetofile(data_dictL0, 'l0')
+        aws_service.putdataintobucket(bucketname,getFilename('l0'))
     
     if checkiffileexists('l1'):
         data_dictL1 = readfromfile('l1')
+        aws_service.putdataintobucket(bucketname,getFilename('l1'))
     else: 
         data_dictL1 = {'data': parsingJOWebL1(data_dictL0['data']) }
         savetofile(data_dictL1, 'l1')
+        aws_service.putdataintobucket(bucketname,getFilename('l1'))
 
     if checkiffileexists('l2'):
         data_dictL2 = readfromfile('l2')
+        aws_service.putdataintobucket(bucketname,getFilename('l2'))
     else: 
         data_dictL2 = {'data': parsingJOWebL2(data_dictL1['data']) }
         savetofile(data_dictL2, 'l2')
+        aws_service.putdataintobucket(bucketname,getFilename('l2'))
 
     if not checkiffileexists('l3'):
         data_dictL3 = {'data': parsingJOWebL3(data_dictL2['data']) }
         savetofile(data_dictL3, 'l3')
+        aws_service.putdataintobucket(bucketname,getFilename('l3'))
 
     #with Pool(total_cpu_count) as p: 
     #    data_dictL1 = {'data': p.map(parsingJOWebL1,data_dictL0['data']) }
@@ -289,8 +303,16 @@ def mainjob():
 
 
 if __name__ == '__main__': 
+    config = read_config.getconfig()
+    logging = setup_logging.getLogger()
+    DATA_DIR = config['PRCONFIG']['GENERAL']['DATA_DIR']
+
     logging.info("Starting of the Application: reading_content.py")
+    
+    bucketname = generateUniquebucketname()
+    aws_service.createawsbucket(bucketname)
     mainjob()
+    
     logging.info("====== Scrapping Data from Website Completed. =========")
 
 
