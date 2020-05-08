@@ -1,4 +1,5 @@
 variable "region" {
+    type = "string"
     default = "us-east-1"
 }
 
@@ -9,7 +10,6 @@ variable "aws_credentials" {
 provider "aws" {
     profile    = "default"
     region     = var.region
-    shared_credentials_file = var.aws_credentials
 }
 
 resource "aws_s3_bucket" "projectrecipe_s3_bkt_rks_2020" {
