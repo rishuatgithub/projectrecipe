@@ -18,9 +18,11 @@ install:
   - conda update -q conda
   - conda info -a # Useful for debugging any issues with conda
 
-  - conda create --name projectrecipeenv python=$TRAVIS_PYTHON_VERSION
-  - conda activate projectrecipeenv
+  - conda create --name $TRAVIS_PROJECTRECIPE_ENV python=$TRAVIS_PYTHON_VERSION
+  - conda activate $TRAVIS_PROJECTRECIPE_ENV
   - conda install --file requirements.txt
 
 script:
+  - echo $TRAVIS_PYTHON_VERSION
+  - echo $TRAVIS_PROJECTRECIPE_ENV
   - pytest projectrecipe/*.py
