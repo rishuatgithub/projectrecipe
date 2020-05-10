@@ -32,6 +32,8 @@ web_parsed_content['levels'] = {}
 url = web_urls[0]
 base_url = urljoin(web_urls[0],'/') ## https://jamieoliver.com/
 #total_cpu_count = multiprocessing.cpu_count()
+DATA_DIR = read_config.getconfig()['PRCONFIG']['GENERAL']['DATA_DIR']
+logging = setup_logging.getLogger()
 
 def logwarnings(stepname,url):
     return logging.warning(f"Found an issue will parsing url: {url} for the step: {stepname}")
@@ -304,8 +306,8 @@ def mainjob():
 
 if __name__ == '__main__': 
     config = read_config.getconfig()
-    logging = setup_logging.getLogger()
-    DATA_DIR = config['PRCONFIG']['GENERAL']['DATA_DIR']
+    #logging = setup_logging.getLogger()
+    #DATA_DIR = config['PRCONFIG']['GENERAL']['DATA_DIR']
 
     logging.info("Starting of the Application: reading_content.py")
     
