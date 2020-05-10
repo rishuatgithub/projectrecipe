@@ -4,10 +4,10 @@
         "GENERAL":{
             "HOME_DIR":"projectrecipe",
 
-            "LOG_DIR":"log/",
+            "LOG_DIR":"projectrecipe/log/",
             "LOG_FILENAME":"reading_content_log.log",
 
-            "DATA_DIR":"data/"
+            "DATA_DIR":"projectrecipe/data/"
         },
 
         "AWS":{

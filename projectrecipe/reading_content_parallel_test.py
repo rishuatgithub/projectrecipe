@@ -3,7 +3,7 @@ import os
 
 
 def test_getFilename(): 
-    assert getFilename('l1')  == 'data/jamieoliverdata_l1.json'
+    assert getFilename('l1')  == 'projectrecipe/data/jamieoliverdata_l1.json'
 
 
 def test_checkiffileexists(): 
