@@ -15,6 +15,7 @@ install:
   - source "$HOME/miniconda/etc/profile.d/conda.sh"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
+  - conda config --add channels conda-forge
   - conda update -n base -c defaults conda
   - conda info -a # Useful for debugging any issues with conda
 
