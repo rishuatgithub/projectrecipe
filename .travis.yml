@@ -34,6 +34,6 @@ deploy:
   provider: s3
   access_key_id: $AWS_ACCESS_KEY_ID
   secret_access_key: $AWS_SECRET_ACCESS_KEY
-  bucket: projectrecipe_travis_latest_2020
+  bucket: projectrecipe-travis-latest-2020
   skip_cleanup: true
   acl: private
