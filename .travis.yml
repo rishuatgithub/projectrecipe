@@ -26,4 +26,6 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - echo $TRAVIS_PROJECTRECIPE_ENV
+  - echo $TRAVIS_BUILD_DIR
+  - ls -l
   - pytest projectrecipe/*.py
