@@ -23,17 +23,29 @@ install:
   - conda activate $TRAVIS_PROJECTRECIPE_ENV
   - conda install --file requirements.txt
 
+deploy:
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: projectrecipe-travis-latest-2020
+    skip_cleanup: true
+    acl: private
+
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: projectrecipe-travis-latest-2020
+    key: master/projectrecipe.zip
+    bundle_type: zip
+    application: projectrecipe
+    deployment_group: projectrecipe-dev-deployment-group
+    region: us-east-1
+    on:
+      branch: master
+
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - echo $TRAVIS_PROJECTRECIPE_ENV
   - echo $TRAVIS_BUILD_DIR
   - ls -l
   - pytest projectrecipe/*.py
-
-deploy:
-  provider: s3
-  access_key_id: $AWS_ACCESS_KEY_ID
-  secret_access_key: $AWS_SECRET_ACCESS_KEY
-  bucket: projectrecipe-travis-latest-2020
-  skip_cleanup: true
-  acl: private
