@@ -1,0 +1,28 @@
+#!/bash/bin
+
+############################################################
+## This installs conda onto the aws instance
+## Author: Rishu Shrivastava
+############################################################
+
+TRAVIS_PROJECTRECIPE_ENV=
+TRAVIS_PYTHON_VERSION=3.8
+
+sudo yum update
+
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+bash miniconda.sh -b -p $HOME/miniconda
+
+source "$HOME/miniconda/etc/profile.d/conda.sh"
+
+hash -r
+
+conda config --set always_yes yes --set changeps1 no
+
+conda config --add channels conda-forge
+
+conda update -n base -c defaults conda
+
+conda create --name $TRAVIS_PROJECTRECIPE_ENV python=$TRAVIS_PYTHON_VERSION
+
+conda activate $TRAVIS_PROJECTRECIPE_ENV
