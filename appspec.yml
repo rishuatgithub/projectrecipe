@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+files:
+  - source: ./
+    destination: /home/ec2-user/
+hooks:
+  BeforeInstall:
+    - location: projectrecipe-infra/install_scripts/aws_install_conda.sh
+      timeout: 300
+      runas: root
+
