@@ -1,16 +1,5 @@
-variable "region" {
-    default = "us-east-1"
-}
-
-variable "aws_credentials" {
-    default = "/Users/rishushrivastava/.aws/credentials"
-}
-
-variable "aws_ec2_keyname" {
-    default = "MyVMInstanceKeyPair"
-}
-
-variable "aws_ec2_sgrp" {
-    default = "ProjectRecipeEC2-SG-01"
-}
-
+profile = "default"
+region = "us-east-1"
+aws_credentials = "/Users/rishushrivastava/.aws/credentials"
+aws_ec2_keyname= "MyVMInstanceKeyPair"
+aws_ec2_sgrp= ["ProjectRecipeEC2-SG-01"]

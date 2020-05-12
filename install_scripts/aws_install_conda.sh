@@ -13,3 +13,4 @@ conda config --add channels conda-forge
 conda update -n base -c defaults conda
 conda create --name $CONDA_PROJECTRECIPE_ENV python=$CONDA_PYTHON_VERSION
 conda activate $CONDA_PROJECTRECIPE_ENV
+conda install --file requirements.txt
