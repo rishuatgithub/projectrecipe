@@ -34,7 +34,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     bucket: projectrecipe-travis-latest-2020
-    key: projectrecipe.zip
+    key: releases/projectrecipe.zip
     bundle_type: zip
     application: projectrecipe
     deployment_group: projectrecipe-dev-deployment-group
