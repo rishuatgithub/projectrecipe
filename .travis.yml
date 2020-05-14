@@ -11,7 +11,7 @@ install:
   - source $HOME/projectrecipe/env/bin/activate
   - echo "source ${HOME}/projectrecipe/env/bin/activate" >> ${HOME}/.bashrc
   - source $HOME/.bashrc
-  - pip install --file requirements.txt
+  - pip3 install -r requirements.txt
 
 
 deploy:
