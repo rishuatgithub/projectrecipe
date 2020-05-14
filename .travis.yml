@@ -9,7 +9,6 @@ install:
   - sudo apt-get update -y
   - python3 -m venv $HOME/projectrecipe/env
   - source $HOME/projectrecipe/env/bin/activate
-  - pip install --upgrade pip
   - pip install --user -r requirements.txt
 
 
