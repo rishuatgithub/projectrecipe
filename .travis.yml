@@ -9,8 +9,8 @@ install:
   - sudo apt-get update -y
   - python3 -m venv $HOME/$TRAVIS_PROJECTRECIPE_ENV/env
   - source $HOME/$TRAVIS_PROJECTRECIPE_ENV/env/bin/activate
-  - pip install --user --upgrade pip
-  - pip install --user -r requirements.txt
+  - pip3 install --user --upgrade pip
+  - pip3 install --user -r requirements.txt
 
 
 deploy:
@@ -39,7 +39,7 @@ script:
   - echo $TRAVIS_BUILD_DIR
   - source $HOME/$TRAVIS_PROJECTRECIPE_ENV/env/bin/activate
   - python --version
-  - pip --version
+  - pip3 --version
   - pytest projectrecipe/*.py
   - zip -r projectrecipe *
   - mkdir -p releases
