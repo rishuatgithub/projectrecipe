@@ -8,6 +8,7 @@ cache:
 install:
   - sudo apt-get update -y
   - sudo apt-get install --upgrade python3-pip
+  - sudo apt-get install python3-setuptools
   - python3 -m venv $HOME/$TRAVIS_PROJECTRECIPE_ENV/env
   - source $HOME/$TRAVIS_PROJECTRECIPE_ENV/env/bin/activate
   - pip3 install --user --upgrade pip
