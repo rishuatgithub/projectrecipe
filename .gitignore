@@ -5,7 +5,8 @@
 *.log
 *.DS_Store
 lock.json
-data/*
+data/
+data/jameoliver*
 .ipynb_checkpoints/*
 **/.ipynb_checkpoints
 *.out
