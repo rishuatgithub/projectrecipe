@@ -2,13 +2,16 @@ language: python
 python:
   - "3.8"
 
+cache: 
+  - pip
+
 install:
   - sudo apt-get update -y 
   - python3 -m venv projectrecipe/env
-  - source ~/projectrecipe/env/bin/activate
+  - source $HOME/projectrecipe/env/bin/activate
   - pip install pip --upgrade
   - echo "source ${HOME}/projectrecipe/env/bin/activate" >> ${HOME}/.bashrc
-  - source ~/.bashrc
+  - source $HOME/.bashrc
   - pip install --file requirements.txt
 
 
