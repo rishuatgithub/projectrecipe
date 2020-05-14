@@ -10,3 +10,7 @@ data/*
 **/.ipynb_checkpoints
 *.out
 *.lock
+*.info
+.vscode
+.pytest_cache
+projectrecipe/__pycache__

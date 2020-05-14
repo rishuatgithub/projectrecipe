@@ -13,7 +13,7 @@ if [ $1 == "START" ]; then
     terraform plan -var-file=$VAR_FILENAME --out $PLAN_OUT_FILENAME
 
     echo "Applying Terraform Plan"
-    terraform apply -var-file=$VAR_FILENAME --auto-approve
+    terraform apply $PLAN_OUT_FILENAME
 
 fi 
 
