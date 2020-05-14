@@ -7,11 +7,10 @@ cache:
 
 install:
   - sudo apt-get update -y 
+  - pip3 install --upgrade pip
   - python3 -m venv $HOME/projectrecipe/env
   - source $HOME/projectrecipe/env/bin/activate
-  - echo "source ${HOME}/projectrecipe/env/bin/activate" >> ${HOME}/.bashrc
-  - source $HOME/.bashrc
-  - pip install -r requirements.txt
+  - pip install --user -r requirements.txt
 
 
 deploy:
