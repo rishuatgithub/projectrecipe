@@ -15,3 +15,4 @@ data/jameoliver*
 .vscode
 .pytest_cache
 projectrecipe/__pycache__
+.vscode/

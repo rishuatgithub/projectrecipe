@@ -20,9 +20,12 @@ sudo service codedeploy-agent status
 ## This script installs Python3 and sets up the py env
 ################################################################
 
+ENV_NAME="projectrecipeenv"
+
 sudo yum install python3 -y
-python3 -m venv projectrecipe/env
-source ~/projectrecipe/env/bin/activate
+python3 -m venv $ENV_NAME/env
+source ~/$ENV_NAME/env/bin/activate
 pip install pip --upgrade
-echo "source ${HOME}/projectrecipe/env/bin/activate" >> ${HOME}/.bashrc
+
+echo "source ${HOME}/${ENV_NAME}/env/bin/activate" >> ${HOME}/.bashrc
 source ~/.bashrc

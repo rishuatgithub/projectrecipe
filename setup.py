@@ -7,5 +7,5 @@ setuptools.setup(
     author_email="rishu.shrivastava@gmail.com",
     description="Project Recipe is an experimental project of classifying recipes",
     url="https://github.com/rishuatgithub/projectrecipe",
-    python_requires='>=3.6'
+    python_requires='==3.8'
 )

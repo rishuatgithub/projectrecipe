@@ -10,14 +10,22 @@ variable "aws_ec2_sgrp" {}
 variable "aws_ec2_tag_name" {}
 variable "aws_ec2_userdata_file_location" {}
 
+variable "aws_s3_bucketname" {}
+variable "aws_s3_acl" {}
+
 
 provider "aws" {
     profile    = var.profile
     region     = var.region
 }
 
+resource "aws_s3_bucket" "projectrecipe_s3" {
+    bucket = var.aws_s3_bucketname
+    acl = var.aws_s3_acl
+}
+
 resource "aws_instance" "projectrecipe_ec2" {
-     count=var.aws_instance_count
+    count=var.aws_instance_count
     ami=var.aws_ami_instance
     instance_type = var.aws_instance_type
     key_name = var.aws_ec2_keyname
