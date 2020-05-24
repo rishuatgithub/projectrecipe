@@ -2,4 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user
+    destination: /home/ec2-user/projectrecipe
+hooks:
+  BeforeInstall:
+    - location: /projectrecipe/install_scripts/post_deploy_step.sh

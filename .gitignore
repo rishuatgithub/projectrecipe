@@ -5,8 +5,14 @@
 *.log
 *.DS_Store
 lock.json
-data/*
+data/
+data/jameoliver*
 .ipynb_checkpoints/*
 **/.ipynb_checkpoints
 *.out
 *.lock
+*.info
+.vscode
+.pytest_cache
+projectrecipe/__pycache__
+.vscode/

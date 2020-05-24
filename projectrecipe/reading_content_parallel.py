@@ -36,7 +36,7 @@ DATA_DIR = read_config.getconfig()['PRCONFIG']['GENERAL']['DATA_DIR']
 logging = setup_logging.getLogger()
 
 def logwarnings(stepname,url):
-    return logging.warning(f"Found an issue will parsing url: {url} for the step: {stepname}")
+    return logging.warning("Found an issue will parsing url: {} for the step: {}".format(url,stepname))
 
 ## define the webconnection class to get the content from the website
 class WebConnection:
@@ -48,17 +48,17 @@ class WebConnection:
         else:
             self.url = base_url + url
             
-        logging.info(f"Parsing web url: {self.url}")
+        logging.info("Parsing web url: {}".format(self.url))
     
     def getresponse(self):
         try:
             response = requests.get(self.url,timeout=10) ## waiting for max timeout = 10 sec for each request
 
         except requests.exceptions.Timeout:
-            logging.error(f"Request to server timed-out. Server: {self.url}")
+            logging.error("Request to server timed-out. Server: {}".format(self.url))
 
         except requests.exceptions.RequestException:
-            logging.error(f"Request to server received some exception. Server: {self.url}")
+            logging.error("Request to server received some exception. Server: {}".format(self.url))
 
         return response
     
@@ -72,7 +72,7 @@ def getsomesleep(num):
         Pausing the scrapping is important for not overloading the website
     '''
     time_to_sleep = 120 ## 60 sec
-    logging.info(f"Request Reached Limit of Level: {num}. Time to take some {time_to_sleep} sec sleep.")
+    logging.info("Request Reached Limit of Level: {}. Time to take some {} sec sleep.".format(num,time_to_sleep))
     time.sleep(time_to_sleep)  
 
 
@@ -233,34 +233,34 @@ def getFilename(level):
 def savetofile(data_dict,level):
 
     fname = getFilename(level)
-    logging.info(f"Writing the dictionary to the file: {fname} started.")
+    logging.info("Writing the dictionary to the file: {} started.".format(fname))
 
     with open(fname,"w") as file:
         file.write(json.dumps(data_dict))
     
-    logging.info(f"Writing the dictionary to the file: {fname} is complete.")
+    logging.info("Writing the dictionary to the file: {} is complete.".format(fname))
 
 def readfromfile(level):
     fname = getFilename(level)
-    logging.info(f"Reading from the file: {fname} started.")
+    logging.info("Reading from the file: {} started.".format(fname))
 
     with open(fname,'r') as file: 
         data = json.load(file)
 
-    logging.info(f"Reading from the file: {fname} completed.")
+    logging.info("Reading from the file: {} completed.".format(fname))
     return data 
 
 def checkiffileexists(level): 
     fname = getFilename(level)
     isexits = os.path.isfile(fname)
-    logging.info(f"checking if the file : {fname} exists. Result: {isexits}")
+    logging.info("checking if the file : {} exists. Result: {}".format(fname,isexits))
     return isexits
 
 def generateUniquebucketname(): 
 
     dt = datetime.datetime.now().strftime('%Y%M%d.%H%m%s')
     bucketname = "projectrecipe.s3."+dt+".data"
-    logging.info(f"Bucket Name generated: {bucketname}")
+    logging.info("Bucket Name generated: {}".format(bucketname))
     return bucketname
 
 
