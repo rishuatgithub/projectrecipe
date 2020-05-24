@@ -3,6 +3,3 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/projectrecipe
-hooks:
-  BeforeInstall:
-    - location: install_scripts/post_deploy_step.sh
