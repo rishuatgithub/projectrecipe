@@ -5,4 +5,4 @@ files:
     destination: /home/ec2-user/projectrecipe
 hooks:
   AfterInstall:
-    - location: projectrecipe/install_scripts/post_deploy_step.sh
+    - location: install_scripts/post_deploy_step.sh
