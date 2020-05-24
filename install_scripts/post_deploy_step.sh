@@ -6,7 +6,8 @@
 
 ENV_NAME="projectrecipeenv"
 
-unzip projectrecipe.zip
-#source ~/$ENV_NAME/env/bin/activate
-#pip3 install --user -r requirements.txt
+#unzip projectrecipe.zip
+source ~/$ENV_NAME/env/bin/activate
+
+pip3 install --user -r projectrecipe/requirements.txt
 
