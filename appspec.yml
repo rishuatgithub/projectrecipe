@@ -6,3 +6,8 @@ files:
 hooks:
   AfterInstall:
     - location: install_scripts/post_deploy_step.sh
+    - runas: root
+  ApplicationStart:
+    - location: install_scripts/start_application.sh
+    - runas: root
+    
