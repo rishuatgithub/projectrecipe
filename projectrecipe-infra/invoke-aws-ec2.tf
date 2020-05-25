@@ -22,6 +22,7 @@ provider "aws" {
 resource "aws_s3_bucket" "projectrecipe_s3" {
     bucket = var.aws_s3_bucketname
     acl = var.aws_s3_acl
+    force_destroy = true
 }
 
 resource "aws_instance" "projectrecipe_ec2" {
