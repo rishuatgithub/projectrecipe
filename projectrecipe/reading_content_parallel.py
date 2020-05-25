@@ -71,7 +71,7 @@ def getsomesleep(num):
     '''
         Pausing the scrapping is important for not overloading the website
     '''
-    time_to_sleep = 120 ## 60 sec
+    time_to_sleep = 120     ## 60 sec
     logging.info("Request Reached Limit of Level: {}. Time to take some {} sec sleep.".format(num,time_to_sleep))
     time.sleep(time_to_sleep)  
 
@@ -218,8 +218,10 @@ def parsingJOWebL3(webcontentL2):
 
             incr += 1
 
-            if incr in [25,50,100,200]:
+            if incr == 100:
                 getsomesleep(incr)
+                incr = 0
+
 
     web_parsed_content['levels']['level3'] = l3_arr
     logging.info("Parsing of Level 3 is complete")
