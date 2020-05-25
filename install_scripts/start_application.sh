@@ -14,4 +14,5 @@ echo "Activating Environment"
 source $EC2_HOME_DIR/$ENV_NAME/env/bin/activate
 
 echo "Starting Application"
-python $EC2_HOME_DIR/$PROJECT_DIR_NAME/projectrecipe/reading_content_parallel.py
+cd $EC2_HOME_DIR/$PROJECT_DIR_NAME
+python projectrecipe/reading_content_parallel.py
