@@ -2,16 +2,26 @@ import boto3 as boto
 import read_config
 import setup_logging
 import datetime
+import socket
 
 config = read_config.getconfig()
-log = setup_logging.getLogger()
+log = setup_logging.getLogger() # 192.168.0.17
 
-def getAWSSession(profile='Default'): 
+def getAWSSession(profile='Default'):
     log.info("Setting up AWS Session for profile: {}".format(profile))
-    return boto.Session(profile_name=profile)
+    if profile == 'AWS': 
+        session = boto.Session()
+    else: 
+        session = boto.Session(profile_name=profile)
+    return session
 
 def getResource(resourcename): 
-    session = getAWSSession(profile=config['PRCONFIG']['AWS']['PROFILE'])
+    host_name, host_ip = getIPAddress()
+
+    if 'ec2' in host_name:
+        session = getAWSSession(profile='AWS')
+    else:
+        session = getAWSSession(profile=config['PRCONFIG']['AWS']['PROFILE'])
     
     if resourcename.upper() == 'S3': 
         try: 
@@ -45,6 +55,17 @@ def putdataintobucket(bucketname, filename):
         log.error("Unable to upload file: {} to AWS S3 bucket : {}".format(filename,bucketname))
 
 
+def getIPAddress():
+    '''
+        Get the IP address of the machine
+    '''
+    try: 
+        host_name = socket.gethostname()
+        host_ip = socket.gethostbyname(host_name)
+    except: 
+        print("Unable to get Hostname and IP") 
+    
+    return (host_name,host_ip)
 
 
 
