@@ -16,3 +16,5 @@ data/jameoliver*
 .pytest_cache
 projectrecipe/__pycache__
 .vscode/
+.DS_Store
+projectrecipe/.DS_Store

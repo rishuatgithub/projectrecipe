@@ -6,13 +6,21 @@
 
             "LOG_DIR":"projectrecipe/log/",
             "LOG_FILENAME":"reading_content_log.log",
-
+            "DB_LOG_FILENAME":"database_log.log",
+            
             "DATA_DIR":"projectrecipe/data/"
         },
 
         "AWS":{
             "PROFILE":"dev"
             
+        },
+
+        "MONGODB":{
+            "CLUSTER":"cluster-recipe-rs01-jxlz2.mongodb.net/test",
+            "DATABASE":"db-proj-recipe",
+            "USERNAME":"prec-admin-01",
+            "PASSWORD":"prec-admin-01"
         }
         
 

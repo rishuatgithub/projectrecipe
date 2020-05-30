@@ -5,7 +5,7 @@ import datetime
 import socket
 
 config = read_config.getconfig()
-log = setup_logging.getLogger() # 192.168.0.17
+log = setup_logging.getLogger()
 
 def getAWSSession(profile='Default'):
     log.info("Setting up AWS Session for profile: {}".format(profile))
